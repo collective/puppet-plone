@@ -49,7 +49,7 @@ class plone::buildout($buildout_dir, $repo_url, $user, $server_config){
    }
 
    exec { 'run_bootstrap':
-      creates => "${buildout_dir}/buildout",
+      creates => "${buildout_dir}/bin/buildout",
       cwd => "${buildout_dir}",
       command => "${buildout_dir}/bin/python ${buildout_dir}/bootstrap.py",
       subscribe => Exec['clone_buildout'],
