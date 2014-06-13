@@ -1,0 +1,14 @@
+# Plone - Web-Content Management System
+#
+# Based on Python and ZOPE
+
+description "start plone"
+author "Josh Sehn based on previous work by Christoph Glaubitz"
+version "0.3"
+
+console none
+respawn
+
+start on (local-filesystems and net-device-up and runlevel [2345])
+stop on runlevel [!2345]
+

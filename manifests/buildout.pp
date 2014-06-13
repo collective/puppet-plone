@@ -1,72 +1,107 @@
-class plone::buildout($buildout_dir, $repo_url, $user, $server_config){
+# buildout.pp
+# requires https://github.com/stankevich/puppet-python
+#          https://github.com/example42/puppet-wget
+#          https://github.com/puppetlabs/puppetlabs-concat
 
-    file { "${buildout_dir}/var":
-        ensure => directory,
-	require => Exec['clone_buildout'],
-        owner => $user,
+define plone::buildout ( $buildout_dir       = $plone::params::buildout_dir,
+                         $buildout_cache_dir = $plone::params::buildout_cache_dir,
+                         $source             = $plone::params::buildout_source, 
+                         $user               = $plone::params::buildout_user,
+                         $group              = $plone::params::buildout_group,
+                         $buildout_params    = {},
+                       ) {
+
+  include plone::params
+   
+  if !defined(Class['python']) {
+    class { 'python':
+      version    => 'system',
+      dev        => true,
+      virtualenv => true,
+      pip        => true,
     }
+  } 
+  
+  # Clone buildout
+  include wget
+  file { "${buildout_dir}/$name": 
+    ensure  => directory,
+    owner   => $user,
+    group   => $group,
+    recurse => true,
+  }
 
-    file { "${buildout_dir}/zope-eggs":
-        ensure => "directory",
-        require	=> Exec['clone_buildout'],
-        owner => $user,
+  if !defined(File["${buildout_dir}/${buildout_cache_dir}"]) {
+    file { [ "${buildout_dir}/${buildout_cache_dir}",
+             "${buildout_dir}/${buildout_cache_dir}/eggs",
+             "${buildout_dir}/${buildout_cache_dir}/downloads"] :
+      ensure  => directory,
+      owner   => $user,
+      group   => $group,
     }
+  }
 
-    file { "${buildout_dir}/buildout-cache":
-        ensure => "directory",
-        require => Exec['clone_buildout'],
-        owner => $user,
-    }
+  wget::fetch { "bootstrap_$name":
+    source      => $source,
+    destination => "${buildout_dir}/$name/bootstrap.py",
+    user        => $user,
+    require     => File["${buildout_dir}/$name"],
+  }
+ 
+  # Create virtualenv
+  python::virtualenv { "${buildout_dir}/$name":
+    ensure       => present,
+    version      => 'system',
+    owner        => $user,
+    group        => $group,
+    cwd          => "${buildout_dir}/$name",
+    require      => [ File["${buildout_dir}/$name"],
+                    ],
+  }
 
-    file { "${buildout_dir}/buildout-cache/downloads":
-        ensure => "directory",
-	require => File["$buildout_dir/buildout-cache"],
-        owner => $user,
-    }
+  exec { "run_bootstrap_$name":
+    creates => "${buildout_dir}/$name/bin/buildout",
+    cwd => "${buildout_dir}/$name",
+    command => "${buildout_dir}/$name/bin/python ${buildout_dir}/$name/bootstrap.py",
+    subscribe => Wget::Fetch["bootstrap_$name"],
+    require => [ Python::Virtualenv["${buildout_dir}/$name"],
+                 Concat["${buildout_dir}/$name/buildout.cfg"],
+               ],
+    user => $user,
+  }  
 
-    # srv needs permissions of hte user to clone appropriately
-    file { "/srv":
-        mode  => '0664',
-        owner => $user,
-        group => 'www',
-    }
+  concat { "${buildout_dir}/$name/buildout.cfg":
+    owner => $user, group => $group, mode => 440,
+  }
 
-    exec { "create_virtualenv":
-        command => "/usr/bin/virtualenv --no-setuptools ${buildout_dir}",
-        creates => "${buildout_dir}/bin/python",
-        user =>	$user,
-        require => Exec['clone_buildout'],
-    }
+  concat::fragment { "buildoutcfg_header_$name":
+    target  => "${buildout_dir}/$name/buildout.cfg",
+    content => "# This file is managed by Puppet. Changes will be periodically overwritten.\n\n",
+    order   => '01',
+  }
 
-    exec{ "clone_buildout":
-        creates => "${buildout_dir}",
-        command => "/usr/bin/git clone ${repo_url} ${buildout_dir}",
-        cwd => '/srv',
-        require => [ Package['git'], 
-                     User[$user],
-                     File['/srv'], ],
-        user =>	$user,
-   }
+  $buildout_default_params = { eggs-directory => "${buildout_dir}/${buildout_cache_dir}/eggs",
+                               download-cache => "${buildout_dir}/${buildout_cache_dir}/downloads",
+                               parts          => "" }   
 
-   exec { 'run_bootstrap':
-      creates => "${buildout_dir}/bin/buildout",
-      cwd => "${buildout_dir}",
-      command => "${buildout_dir}/bin/python ${buildout_dir}/bootstrap.py",
-      subscribe => Exec['clone_buildout'],
-      require => Exec['create_virtualenv'],      
-      user => $user,
-    }
+  $buildout_final_params = merge($buildout_default_params, $buildout_params)
+ 
+  plone::buildoutsection { "buildout_$name":
+    section_name => "buildout",
+    cfghash      => $buildout_final_params,
+    buildout_dir => "${buildout_dir}/$name",
+  }
 
-   exec { 'initial_buildout':
-      cwd => "${buildout_dir}",
-      command => "${buildout_dir}/bin/buildout -c ${buildout_dir}/${server_config}",
-      subscribe => Exec['run_bootstrap'],
-      user => $user,
-   }
-
-   exec { 'start_supervisor':
-      cwd => "${buildout_dir}",
-      command => "${buildout_dir}/bin/supervisord",
-      subscribe => Exec['initial_buildout'],
-   }
+  exec { "run_buildout_$name":
+    cwd => "${buildout_dir}/$name",
+    command => "${buildout_dir}/$name/bin/buildout -c ${buildout_dir}/$name/buildout.cfg",
+    subscribe => [ Exec["run_bootstrap_$name"],
+                   File["${buildout_dir}/$name/buildout.cfg"],
+                 ],
+    refreshonly => true,
+    user => $user,
+    logoutput => true,
+    timeout => 0,
+  }
+  
 }

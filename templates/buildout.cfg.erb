@@ -1,0 +1,8 @@
+[<%= @section_name %>]
+<% @cfghash.keys.sort.each do |key| -%>
+<%= key -%> =  
+<% @cfghash[key].each do |value| -%>
+    <%= value %>
+<% end -%>
+<% end -%>
+
