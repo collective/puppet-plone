@@ -28,7 +28,6 @@ define plone::buildout ( $buildout_dir       = $plone::params::buildout_dir,
     ensure  => directory,
     owner   => $user,
     group   => $group,
-    recurse => true,
   }
 
   if !defined(File["${buildout_dir}/${buildout_cache_dir}"]) {

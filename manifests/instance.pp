@@ -135,13 +135,21 @@ define plone::instance ( $port           = $plone::params::instance_port,
   # Init script
   case $operatingsystem {
     'Ubuntu': {
-      concat::fragment { "plone_upstart_instance_$name":
-        target  => "/etc/init/plone.conf",
-        content => "exec sudo -u $plone_user $install_dir/$name/bin/plonectl start\n",
-        order   => '99',
+      file { "/etc/init/plone-$name.conf":
+        owner => 'root', group => 'root', mode => 644,
+        content => template('plone/plone_upstart.conf.erb'),
+      }
+      service { "plone-$name":
+        enable    => true,
+        ensure    => running,
+        provider  => upstart,
+        subscribe => Exec["run_buildout_$name"],
+        require   => File["/etc/init/plone-$name.conf"],
       }
     }
+   default: {
+     notify { "Puppet will not manage Plone $name service, since this operating system is not supported": } 
+   }
   }
-
 
 }

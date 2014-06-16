@@ -57,19 +57,5 @@ class plone::install ( $install_dir         = $plone::params::plone_install_dir,
   validate_hash($instances)
   create_resources(plone::instance, $instances, $instance_defaults)
 
-  # install init script
-  case $operatingsystem {
-    'Ubuntu': {
-      concat { "/etc/init/plone.conf":
-        owner => 'root', group => 'root', mode => 644,
-      }
-      concat::fragment { "plone_upstart_header":
-        target  => "/etc/init/plone.conf",
-        content => template('plone/plone_upstart.conf.erb'),
-        order   => '01',
-      }
-    }
-  }
-
 }
 
