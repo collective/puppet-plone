@@ -9,7 +9,10 @@ define plone::instance ( $port           = $plone::params::instance_port,
                          $plone_user     = $plone::params::plone_user, 
                          $plone_group    = $plone::params::plone_group,
                          $find_links     = $plone::params::find_links,
-                         $plone_versions = $plone::params::plone_versions, 
+                         $plone_versions = $plone::params::plone_versions,
+                         $read_only      = $plone::params::inst_readonly_status,
+                         $zeo_client     = $plone::params::zeo_client_status,
+                         $zeo_address    = '', 
                          $custom_eggs    = [],
                          $custom_extends = [],
                        ) {
@@ -60,24 +63,39 @@ define plone::instance ( $port           = $plone::params::instance_port,
   validate_array($custom_eggs)
   $eggs = concat($plone::params::instance_eggs,$custom_eggs)
 
+  $inst_common_config = { recipe               => 'plone.recipe.zope2instance',
+                          http-address         => "$port",
+                          read-only            => "$read_only",
+                          user                 => "$user:$password",
+                          effective-user       => '${buildout:effective-user}',
+                          eggs                 => $eggs,
+                          var                  => "$install_dir/$name/var",
+                          event-log            => "$install_dir/$name/var/log/event.log",
+                          z2-log               => "$install_dir/$name/var/log/Z2.log",
+                          event-log-max-size   => '5 MB',
+                          event-log-old-files  => '5',
+                          access-log-max-size  => '20 MB',
+                          access-log-old-files => '5',
+                          debug-mode           => 'off',
+                          verbose-security     => '${buildout:verbose-security}',
+                          deprecation-warnings => '${buildout:deprecation-warnings}',
+                        }
+
+  if $zeo_client == true {
+    validate_re($zeo_address,'\b(?:\d{1,3}\.){3}\d{1,3}\b:\d{1,5}\b',"Invalid ZEO server host. Must be an IP Socket.")
+
+    $inst_cfg_header = { zeo-client       => 'true',
+                         shared-blob      => 'on',
+                         http-fast-listen => 'off',
+                         zeo-address      => "$zeo_address",
+                       }
+  } else {
+    $inst_cfg_header = { }
+  }
+
   plone::buildoutsection { "instance_$name":
     section_name => "instance",
-    cfghash      => { recipe => [ 'plone.recipe.zope2instance' ],
-                      http-address => [ "$port" ],
-                      user => [ "$user:$password" ],
-                      effective-user => '${buildout:effective-user}',
-                      eggs => $eggs,
-                      var  => "$install_dir/$name/var",
-                      event-log => "$install_dir/$name/var/log/event.log",
-                      z2-log    => "$install_dir/$name/var/log/Z2.log",
-                      event-log-max-size => '5 MB',
-                      event-log-old-files => '5',
-                      access-log-max-size => '20 MB',
-                      access-log-old-files => '5',
-                      debug-mode => 'off',
-                      verbose-security => '${buildout:verbose-security}',
-                      deprecation-warnings => '${buildout:deprecation-warnings}',
-                    },
+    cfghash      => merge($inst_cfg_header,$inst_common_config),
     buildout_dir => "${install_dir}/$name",
   }
   

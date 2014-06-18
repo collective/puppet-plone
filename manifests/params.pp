@@ -21,11 +21,13 @@ class plone::params {
   $default_standalone_instances = { 'client0' => { port => '8080'} }
   $default_zeo_instances = { 'server' => { port => '8100'} }
 
-  # Plone Instances defaults
-  $instance_port  = '8080'
-  $instance_user  = 'admin'
-  $instance_pw    = 'admin'
-  $instance_eggs  = [ 'Plone', 'Pillow' ]
+  # Plone Instances defaults 
+  $zeo_client_status    = false
+  $inst_readonly_status = false
+  $instance_port        = '8080'
+  $instance_user        = 'admin'
+  $instance_pw          = 'admin'
+  $instance_eggs        = [ 'Plone', 'Pillow' ]
 
   # Zeo server defaults
   $zeo_port = '8100'

@@ -43,8 +43,8 @@ class plone::install ( $install_dir         = $plone::params::plone_install_dir,
   }
 
   case $type {
-    'standalone': {
-      notify { "Plone standalone install.": }
+    'standalone', 'zeoclient': {
+      notify { "Plone $type install.": }
 
       $instance_defaults = {
         user           => $admin_user,
@@ -85,9 +85,6 @@ class plone::install ( $install_dir         = $plone::params::plone_install_dir,
         create_resources(plone::zeo, $instances, $zeo_defaults)
       }
 
-    }
-    'zeoclient': {
-      notify { "Deploying plone as a zeo client.": }
     }
     default: {
       fail("Install type $type not supported! Supported types are standalone, zeo or zeoclient.")
