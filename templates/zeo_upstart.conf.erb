@@ -1,0 +1,15 @@
+# Plone - Web-Content Management System
+#
+# Based on Python and ZOPE
+
+description "start plone zeoserver <%= @name %>"
+author "Fabio Rauber based on previous work by Josh Sehn and Christoph Glaubitz"
+version "0.4"
+
+console none
+respawn
+
+start on (local-filesystems and net-device-up and runlevel [2345])
+stop on runlevel [!2345]
+
+exec <%= @install_dir %>/zeo-<%= @name %>/bin/zeoserver fg

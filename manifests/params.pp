@@ -16,11 +16,20 @@ class plone::params {
   $buildout_user  = 'root'
   $buildout_group = 'root'
 
+  # Plone module defaults
+  $default_install_type = 'standalone'
+  $default_standalone_instances = { 'client0' => { port => '8080'} }
+  $default_zeo_instances = { 'server' => { port => '8100'} }
+
   # Plone Instances defaults
   $instance_port  = '8080'
   $instance_user  = 'admin'
   $instance_pw    = 'admin'
   $instance_eggs  = [ 'Plone', 'Pillow' ]
+
+  # Zeo server defaults
+  $zeo_port = '8100'
+  $default_zrs_role = 'disabled'
 
   #Plone Buildout defaults
   $extends             = ['http://dist.plone.org/release/4.3.3/versions.cfg']

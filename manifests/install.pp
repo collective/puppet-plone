@@ -1,7 +1,7 @@
 # plone.pp
 
 class plone::install ( $install_dir         = $plone::params::plone_install_dir,
-                       $instances           = { 'client0' => { port => '8080'} },
+                       $instances           = {},
                        $plone_group         = $plone::params::plone_group,
                        $plone_user          = $plone::params::plone_user,
                        $buildout_user       = $plone::params::plone_buildout_user,
@@ -10,6 +10,7 @@ class plone::install ( $install_dir         = $plone::params::plone_install_dir,
                        $find_links          = $plone::params::find_links,
                        $custom_extends      = [],
                        $custom_eggs         = [],
+                       $type                = $plone::params::default_install_type, 
 		     ) inherits plone::params {
 
   include plone::zope
@@ -41,21 +42,57 @@ class plone::install ( $install_dir         = $plone::params::plone_install_dir,
     mode   => '2755',
   }
 
+  case $type {
+    'standalone': {
+      notify { "Plone standalone install.": }
 
-  $instance_defaults = {
-    user           => $admin_user,
-    password       => $admin_password,
-    install_dir    => $install_dir,
-    buildout_user  => $buildout_user,
-    plone_user     => $plone_user,
-    plone_group    => $plone_group,
-    find_links     => $find_links,
-    custom_eggs    => $custom_eggs,
-    custom_extends => $custom_extends
+      $instance_defaults = {
+        user           => $admin_user,
+        password       => $admin_password,
+        install_dir    => $install_dir,
+        buildout_user  => $buildout_user,
+        plone_user     => $plone_user,
+        plone_group    => $plone_group,
+        find_links     => $find_links,
+        custom_eggs    => $custom_eggs,
+        custom_extends => $custom_extends
+      }
+      if ( $instances == {} ) {
+        create_resources( plone::instance, 
+                          $plone::params::default_standalone_instances, 
+                          $instance_defaults )
+      } else {  
+        validate_hash($instances)
+        create_resources(plone::instance, $instances, $instance_defaults)
+      }
+    } 
+    'zeo': {
+      notify { "Plone zeo server install.": }
+
+      $zeo_defaults = {
+        install_dir    => $install_dir,
+        buildout_user  => $buildout_user,
+        plone_user     => $plone_user,
+        plone_group    => $plone_group,
+        find_links     => $find_links,
+      }
+      if ( $instances == {} ) {
+        create_resources( plone::zeo,
+                          $plone::params::default_zeo_instances,
+                          $zeo_defaults )
+      } else {
+        validate_hash($instances)
+        create_resources(plone::zeo, $instances, $zeo_defaults)
+      }
+
+    }
+    'zeoclient': {
+      notify { "Deploying plone as a zeo client.": }
+    }
+    default: {
+      fail("Install type $type not supported! Supported types are standalone, zeo or zeoclient.")
+    }
   }
-
-  validate_hash($instances)
-  create_resources(plone::instance, $instances, $instance_defaults)
 
 }
 
