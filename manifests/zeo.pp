@@ -33,8 +33,7 @@ define plone::zeo ( $port           = $plone::params::zeo_port,
                          eggs                 => $eggs,
                          parts                => [ 'zeoserver',
                                                    'zopepy',
-                                                   #'backup',
-                                                   #'unifiedinstaller',
+                                                   'backup',
                                                    'precompiler',
                                                  ],
                          allow-hosts          => [ '*.python.org' ],
@@ -129,35 +128,21 @@ define plone::zeo ( $port           = $plone::params::zeo_port,
     buildout_dir => "${install_dir}/zeo-$name",
   }
 
-  # This recipe installs the plonectl script and a few other convenience items.
-  # For options see http://pypi.python.org/pypi/plone.recipe.unifiedinstaller
-
-  #plone::buildoutsection { "unifiedinstaller_$name":
-  #  section_name => "unifiedinstaller",
-  #  cfghash      => { recipe => 'plone.recipe.unifiedinstaller',
-  #                    user => '${instance:user}',
-  #                    effective-user => '${buildout:effective-user}',
-  #                    buildout-user => '${buildout:buildout-user}',
-  #                    need-sudo => 'yes'
-  #                  },
-  #  buildout_dir => "${install_dir}/$name",
-  #}
-
   # This recipe builds the backup, restore and snapshotbackup commands.
   # For options see http://pypi.python.org/pypi/collective.recipe.backup
 
-  #plone::buildoutsection { "backup_$name":
-  #  section_name => "backup",
-  #  cfghash      => { recipe => 'collective.recipe.backup',
-  #                    location => '${buildout:backups-dir}/backups'
-  #                    blobbackuplocation => '${buildout:backups-dir}/blobstoragebackups'
-  #                    snapshotlocation => '${buildout:backups-dir}/snapshotbackups'
-  #                    blobsnapshotlocation => '${buildout:backups-dir}/blobstoragesnapshots'
-  #                    datafs => '${buildout:var-dir}/filestorage/Data.fs'
-  #                    blob-storage => '${buildout:var-dir}/blobstorage'
-  #                  },
-  #  buildout_dir => "${install_dir}/$name",
-  #}
+  plone::buildoutsection { "backup_zeo-$name":
+    section_name => "backup",
+    cfghash      => { recipe => 'collective.recipe.backup',
+                      location => '${buildout:backups-dir}/backups',
+                      blobbackuplocation => '${buildout:backups-dir}/blobstoragebackups',
+                      snapshotlocation => '${buildout:backups-dir}/snapshotbackups',
+                      blobsnapshotlocation => '${buildout:backups-dir}/blobstoragesnapshots',
+                      datafs => '${buildout:var-dir}/filestorage/Data.fs',
+                      blob-storage => '${buildout:var-dir}/blobstorage',
+                    },
+    buildout_dir => "${install_dir}/zeo-$name",
+  }
 
 
 
