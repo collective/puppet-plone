@@ -13,7 +13,7 @@ Required modules:
 
 Example for installing two Plone standalone instances:
 ```
-class { "plone::install":
+class { "plone":
   instances => { 
      client0 => { port => '8080' },
      client1 => { port => '8081' },
@@ -23,7 +23,7 @@ class { "plone::install":
 
 Installing a zeo client:
 ```
-class { "plone::install":
+class { "plone":
   type => 'zeoclient',
   instances => {
      client0 => { port        => '8080',
@@ -38,7 +38,7 @@ class { "plone::install":
 Installing a zeo server:
 
 ```
-class { "plone::install":
+class { "plone":
   type => 'zeo',
   instances => {
      client0 => { port => '8080' }
@@ -49,7 +49,7 @@ class { "plone::install":
 Installing a ZRS Primary server (with IP 10.0.0.1):
 
 ```
-class { "plone::install":
+class { "plone":
   type => 'zeo',
   instances => {
      client0 => { port => '8080',
@@ -63,7 +63,7 @@ class { "plone::install":
 Installing a ZRS Secondary server replicating from the primary above:
 
 ```
-class { "plone::install":
+class { "plone":
   type => 'zeo',
   instances => {
      client0 => { port => '8080', 
