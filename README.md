@@ -3,6 +3,14 @@ puppet-plone
 
 A set of puppet modules for installing and maintaining plone like a boss.
 
+Required modules:
+ - https://github.com/stankevich/puppet-python
+ - https://github.com/example42/puppet-wget
+ - https://github.com/puppetlabs/puppetlabs-concat
+ - https://github.com/puppetlabs/puppetlabs-stdlib
+
+
+
 Example for installing two Plone standalone instances:
 ```
 class { "plone::install":
