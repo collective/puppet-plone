@@ -31,11 +31,6 @@ define plone::zeo ( $port           = $plone::params::zeo_port,
                          effective-user       => $plone_user,
                          find-links           => $find_links,
                          eggs                 => $eggs,
-                         parts                => [ 'zeoserver',
-                                                   'zopepy',
-                                                   'backup',
-                                                   'precompiler',
-                                                 ],
                          allow-hosts          => [ '*.python.org' ],
                          var-dir              => '${buildout:directory}/var',
                          backups-dir          => '${buildout:var-dir}',
@@ -85,8 +80,8 @@ define plone::zeo ( $port           = $plone::params::zeo_port,
     }
   }  
 
-  plone::buildoutsection { "zeoserver_$name":
-        section_name => "zeoserver",
+  plone::buildoutpart { "zeoserver_$name":
+        part_name    => "zeoserver",
         cfghash      => merge($zeo_cfg_header,$zeo_common_config), 
         buildout_dir => "${install_dir}/zeo-$name",
   }
@@ -104,8 +99,8 @@ define plone::zeo ( $port           = $plone::params::zeo_port,
   # installs a zopepy python interpreter that runs with your
   # full Zope environment
 
-  plone::buildoutsection { "zopepy_zeo-$name":
-    section_name => "zopepy",
+  plone::buildoutpart { "zopepy_zeo-$name":
+    part_name    => "zopepy",
     cfghash      => { recipe => 'zc.recipe.egg',
                       eggs => '${buildout:eggs}',
                       interpreter => 'zopepy',
@@ -118,8 +113,8 @@ define plone::zeo ( $port           = $plone::params::zeo_port,
   # .py and .po files so that the daemon doesn't try to do it.
   # For options see http://pypi.python.org/pypi/plone.recipe.precompiler
 
-  plone::buildoutsection { "precompiler_zeo-$name":
-    section_name => "precompiler",
+  plone::buildoutpart { "precompiler_zeo-$name":
+    part_name    => "precompiler",
     cfghash      => { recipe => 'plone.recipe.precompiler',
                       eggs => '${buildout:eggs}',
                       compile-mo-files => 'true',
@@ -131,8 +126,8 @@ define plone::zeo ( $port           = $plone::params::zeo_port,
   # This recipe builds the backup, restore and snapshotbackup commands.
   # For options see http://pypi.python.org/pypi/collective.recipe.backup
 
-  plone::buildoutsection { "backup_zeo-$name":
-    section_name => "backup",
+  plone::buildoutpart { "backup_zeo-$name":
+    part_name    => "backup",
     cfghash      => { recipe => 'collective.recipe.backup',
                       location => '${buildout:backups-dir}/backups',
                       blobbackuplocation => '${buildout:backups-dir}/blobstoragebackups',
