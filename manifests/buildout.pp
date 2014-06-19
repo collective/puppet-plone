@@ -87,8 +87,15 @@ define plone::buildout ( $buildout_dir       = $plone::params::buildout_dir,
  
   plone::buildoutsection { "buildout_$name":
     section_name => "buildout",
-    cfghash      => $buildout_final_params,
+    cfghash      => delete($buildout_final_params,'parts'),
     buildout_dir => "${buildout_dir}/$name",
+    order        => '02',
+  }
+  
+  concat::fragment { "buildoutcfg_parts_$name":
+    target  => "${buildout_dir}/$name/buildout.cfg",
+    content => "parts = \n",
+    order   => '03',
   }
 
   exec { "run_buildout_$name":

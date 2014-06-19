@@ -1,4 +1,4 @@
-# plone.pp
+# init.pp
 
 class plone ( $install_dir         = $plone::params::plone_install_dir,
               $instances           = {},

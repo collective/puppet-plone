@@ -31,11 +31,6 @@ define plone::instance ( $port           = $plone::params::instance_port,
                          buildout-user        => $buildout_user,
                          effective-user       => $plone_user,
                          find-links           => $find_links,
-                         parts                => [ 'instance',
-                                                   'zopepy',
-                                                   'unifiedinstaller',
-                                                   'precompiler',
-                                                 ],
                          allow-hosts          => [ '*.python.org' ],
                          var-dir              => '${buildout:directory}/var',
                          backups-dir          => '${buildout:var-dir}',
@@ -93,8 +88,8 @@ define plone::instance ( $port           = $plone::params::instance_port,
     $inst_cfg_header = { }
   }
 
-  plone::buildoutsection { "instance_$name":
-    section_name => "instance",
+  plone::buildoutpart { "instance_$name":
+    part_name    => "instance",
     cfghash      => merge($inst_cfg_header,$inst_common_config),
     buildout_dir => "${install_dir}/$name",
   }
@@ -112,8 +107,8 @@ define plone::instance ( $port           = $plone::params::instance_port,
   # installs a zopepy python interpreter that runs with your
   # full Zope environment
 
-  plone::buildoutsection { "zopepy_$name":
-    section_name => "zopepy",
+  plone::buildoutpart { "zopepy_$name":
+    part_name    => "zopepy",
     cfghash      => { recipe => 'zc.recipe.egg',
                       eggs => '${instance:eggs}',
                       interpreter => 'zopepy',
@@ -126,8 +121,8 @@ define plone::instance ( $port           = $plone::params::instance_port,
   # .py and .po files so that the daemon doesn't try to do it.
   # For options see http://pypi.python.org/pypi/plone.recipe.precompiler
 
-  plone::buildoutsection { "precompiler_$name":
-    section_name => "precompiler",
+  plone::buildoutpart { "precompiler_$name":
+    part_name    => "precompiler",
     cfghash      => { recipe => 'plone.recipe.precompiler',
                       eggs => '${instance:eggs}',
                       compile-mo-files => 'true',
@@ -139,8 +134,8 @@ define plone::instance ( $port           = $plone::params::instance_port,
   # This recipe installs the plonectl script and a few other convenience items.
   # For options see http://pypi.python.org/pypi/plone.recipe.unifiedinstaller
 
-  plone::buildoutsection { "unifiedinstaller_$name":
-    section_name => "unifiedinstaller",
+  plone::buildoutpart { "unifiedinstaller_$name":
+    part_name    => "unifiedinstaller",
     cfghash      => { recipe => 'plone.recipe.unifiedinstaller',
                       user => '${instance:user}',
                       effective-user => '${buildout:effective-user}',
