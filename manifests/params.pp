@@ -51,5 +51,12 @@ class plone::params {
                            'zopeskel.diazotheme'           => '1.1',
                          }
 
-  
+  #Plone Site Defaults
+  $default_site_id               = 'plone'
+  $default_site_replace          = 'false'
+  $default_site_container        = '/'
+  $default_site_protocol         = 'http'
+  $default_site_port             = '80'
+  $default_site_use_vhm          = 'true'
+  $default_site_language         = 'en'
 }

@@ -2,6 +2,7 @@
 
 class plone ( $install_dir         = $plone::params::plone_install_dir,
               $instances           = {},
+              $sites               = {},
               $plone_group         = $plone::params::plone_group,
               $plone_user          = $plone::params::plone_user,
               $buildout_user       = $plone::params::plone_buildout_user,
@@ -90,6 +91,12 @@ class plone ( $install_dir         = $plone::params::plone_install_dir,
       fail("Install type $type not supported! Supported types are standalone, zeo or zeoclient.")
     }
   }
+
+  # Create plone sites
+  validate_hash($sites)
+
+  $default_site_params = { install_dir => $install_dir }
+  create_resources(plone::site, $sites, $default_site_params)
 
 }
 

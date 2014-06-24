@@ -15,6 +15,7 @@ define plone::instance ( $port           = $plone::params::instance_port,
                          $zeo_address    = '', 
                          $custom_eggs    = [],
                          $custom_extends = [],
+                         $sites          = {},
                        ) {
 
   include plone::params
