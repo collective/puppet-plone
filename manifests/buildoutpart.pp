@@ -9,14 +9,14 @@ define plone::buildoutpart ( $part_name     = $name,
   concat::fragment { "part_def_$name":
     target  => "${buildout_dir}/buildout.cfg",
     content => "   $part_name\n",
-    order   => '04',
+    order   => "04${order}",
   }
 
   plone::buildoutsection { "part_$name":
     section_name => "$part_name",
     cfghash      => $cfghash,
     buildout_dir => "${buildout_dir}",
-    order        => $order,
+    order        => "99${order}",
   }
 
 }
