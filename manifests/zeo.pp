@@ -9,6 +9,7 @@ define plone::zeo ( $port           = $plone::params::zeo_port,
                     $find_links     = $plone::params::find_links,
                     $plone_versions = $plone::params::plone_versions,
                     $zrs_role       = $plone::params::default_zrs_role,
+                    $zrs_keep_alive = $plone::params::default_zrs_keep_alive,
                     $zrs_repl_host  = '',
                     $custom_extends = [],
                     $custom_eggs    = [],
@@ -31,7 +32,7 @@ define plone::zeo ( $port           = $plone::params::zeo_port,
                          effective-user       => $plone_user,
                          find-links           => $find_links,
                          eggs                 => $eggs,
-                         allow-hosts          => [ '*.python.org' ],
+                         allow-hosts          => $plone::params::allow_hosts,
                          var-dir              => '${buildout:directory}/var',
                          backups-dir          => '${buildout:var-dir}',
                          newest               => 'false',
@@ -64,13 +65,17 @@ define plone::zeo ( $port           = $plone::params::zeo_port,
     'primary': {
       validate_re($zrs_repl_host,'\b(?:\d{1,3}\.){3}\d{1,3}\b:\d{1,5}\b',"Invalid ZRS replication host. Must be an IP Socket.")
 
-      $zeo_cfg_header = { recipe         => 'plone.recipe.zeoserver[zrs]',
-                          replicate-to   => $zrs_repl_host }
+      $zeo_cfg_header = { recipe           => 'plone.recipe.zeoserver[zrs]',
+                          replicate-to     => $zrs_repl_host,
+                          keep-alive-delay => $zrs_keep_alive,
+                        }
     }
     'secondary': {
       validate_re($zrs_repl_host,'\b(?:\d{1,3}\.){3}\d{1,3}\b:\d{1,5}\b',"Invalid ZRS replication host. Must be an IP Socket.")
-      $zeo_cfg_header = { recipe         => 'plone.recipe.zeoserver[zrs]',
-                          replicate-from => $zrs_repl_host }
+      $zeo_cfg_header = { recipe           => 'plone.recipe.zeoserver[zrs]',
+                          replicate-from   => $zrs_repl_host,
+                          keep-alive-delay => $zrs_keep_alive,
+                        }
     }
     'disabled': {
       $zeo_cfg_header = { recipe => 'plone.recipe.zeoserver' }
