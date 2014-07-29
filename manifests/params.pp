@@ -18,9 +18,10 @@ class plone::params {
   $buildout_group = 'root'
 
   # Plone module defaults
-  $default_install_type = 'standalone'
+  $default_install_type         = 'standalone'
   $default_standalone_instances = { 'client0' => { port => '8080'} }
-  $default_zeo_instances = { 'server' => { port => '8100'} }
+  $default_zeo_instances        = { 'server' => { port => '8100'} }
+  $create_default_inst          = true
 
   # Plone Instances defaults 
   $zeo_client_status    = false

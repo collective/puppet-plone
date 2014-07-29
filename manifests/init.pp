@@ -13,6 +13,7 @@ class plone ( $install_dir         = $plone::params::plone_install_dir,
               $custom_extends      = [],
               $custom_eggs         = [],
               $type                = $plone::params::default_install_type, 
+              $create_default_inst = $plone::params::create_default_inst,
 	    ) inherits plone::params {
 
   include plone::zope
@@ -59,7 +60,7 @@ class plone ( $install_dir         = $plone::params::plone_install_dir,
         custom_eggs    => $custom_eggs,
         custom_extends => $custom_extends
       }
-      if ( $instances == {} ) {
+      if ( $instances == {} and $create_default_inst == true ) {
         create_resources( plone::instance, 
                           $plone::params::default_standalone_instances, 
                           $instance_defaults )
@@ -78,7 +79,7 @@ class plone ( $install_dir         = $plone::params::plone_install_dir,
         plone_group    => $plone_group,
         find_links     => $find_links,
       }
-      if ( $instances == {} ) {
+      if ( $instances == {} and $create_default_inst == true) {
         create_resources( plone::zeo,
                           $plone::params::default_zeo_instances,
                           $zeo_defaults )
