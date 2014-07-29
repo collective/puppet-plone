@@ -6,13 +6,14 @@ class plone::params {
   $buildout_dir       = '/srv/buildout'
   $buildout_cache_dir = 'buildout-cache'
   $buildout_source    = 'http://downloads.buildout.org/2/bootstrap.py'
-  $find_links         = [ 'http://dist.plone.org',
-                          'http://download.zope.org/ppix/',
-                          'http://download.zope.org/distribution/',
-                          'http://effbot.org/downloads',
-                          'http://effbot.org/downloads',
-		          'http://dist.plone.org/release/4.3-latest' ]
-
+  $find_links         = ['http://dist.plone.org',
+                         'http://download.zope.org/ppix/',
+                         'http://download.zope.org/distribution/',
+                         'http://effbot.org/downloads',
+		         'http://dist.plone.org/release/4.3-latest',
+                         'https://github.com/interlegis/collective.recipe.filestorage/tarball/master#egg=collective.recipe.filestorage-0.7il1' ]
+  $allow_hosts        = [ '*.python.org',
+                          'github.com' ]
   $buildout_user  = 'root'
   $buildout_group = 'root'
 
@@ -32,6 +33,7 @@ class plone::params {
   # Zeo server defaults
   $zeo_port = '8100'
   $default_zrs_role = 'disabled'
+  $default_zrs_keep_alive = '60'
 
   #Plone Buildout defaults
   $extends             = ['http://dist.plone.org/release/4.3.3/versions.cfg']
@@ -49,6 +51,7 @@ class plone::params {
                            'plone.recipe.unifiedinstaller' => '4.3.1',
                            'zopeskel.dexterity'            => '1.5.4.1',
                            'zopeskel.diazotheme'           => '1.1',
+                           'collective.recipe.filestorage' => '0.7il1',
                          }
 
   #Plone Site Defaults
@@ -59,4 +62,5 @@ class plone::params {
   $default_site_port             = '80'
   $default_site_use_vhm          = 'true'
   $default_site_language         = 'en'
+  $default_site_has_filestorage  = false
 }

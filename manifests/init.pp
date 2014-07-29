@@ -3,6 +3,7 @@
 class plone ( $install_dir         = $plone::params::plone_install_dir,
               $instances           = {},
               $sites               = {},
+              $filestorages        = {},
               $plone_group         = $plone::params::plone_group,
               $plone_user          = $plone::params::plone_user,
               $buildout_user       = $plone::params::plone_buildout_user,
@@ -94,9 +95,14 @@ class plone ( $install_dir         = $plone::params::plone_install_dir,
 
   # Create plone sites
   validate_hash($sites)
-
   $default_site_params = { install_dir => $install_dir }
   create_resources(plone::site, $sites, $default_site_params)
+
+  # Create filestorages
+  validate_hash($filestorages)
+  $default_fs_params = { install_dir => $install_dir }
+  create_resources(plone::filestorage, $filestorages, $default_fs_params)
+
 
 }
 
