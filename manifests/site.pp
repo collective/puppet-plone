@@ -13,7 +13,7 @@ define plone::site ( $id               = $plone::params::default_site_id,
                      $products         = [],
                      $products_initial = [],
                      $instance_name,
-                     $install_dir,
+                     $install_dir      = $plone::params::plone_install_dir,
                     ) {
 
   plone::buildoutpart { "site_$name":
