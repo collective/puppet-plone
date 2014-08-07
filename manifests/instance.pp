@@ -15,6 +15,7 @@ define plone::instance ( $port           = $plone::params::instance_port,
                          $zeo_address    = '', 
                          $custom_eggs    = [],
                          $custom_extends = [],
+                         $custom_params  = {},
                          $sites          = {},
                        ) {
 
@@ -22,26 +23,27 @@ define plone::instance ( $port           = $plone::params::instance_port,
 
   #Instantiate buildout and buildout section
   validate_array($custom_extends)
-  $extends = concat($plone::params::extends,$custom_extends)
+  
+  $bout_params = { extends              => concat($plone::params::extends,$custom_extends),
+                   buildout-user        => $buildout_user,
+                   effective-user       => $plone_user,
+                   find-links           => $find_links,
+                   allow-hosts          => $plone::params::allow_hosts,
+                   var-dir              => '${buildout:directory}/var',
+                   backups-dir          => '${buildout:var-dir}',
+                   newest               => 'false',
+                   prefer-final         => 'true',
+                   extensions           => [ 'buildout.sanitycheck' ],
+                   environment-vars     => 'zope_i18n_compile_mo_files true',
+                   deprecation-warnings => 'off',
+                   verbose-security     => 'off',
+                 }
 
   plone::buildout { $name:
     user            => $buildout_user,
     group           => $plone_group,
     buildout_dir    => "${install_dir}",
-    buildout_params => { extends              => $extends,
-                         buildout-user        => $buildout_user,
-                         effective-user       => $plone_user,
-                         find-links           => $find_links,
-                         allow-hosts          => $plone::params::allow_hosts,
-                         var-dir              => '${buildout:directory}/var',
-                         backups-dir          => '${buildout:var-dir}',
-                         newest               => 'false',
-                         prefer-final         => 'true',
-                         extensions           => [ 'buildout.sanitycheck' ],
-                         environment-vars     => 'zope_i18n_compile_mo_files true',
-                         deprecation-warnings => 'off',
-			 verbose-security     => 'off',
-                       },
+    buildout_params => merge($bout_params, $custom_params),
     require         => [ User[$buildout_user],
                          File[$install_dir],
                        ],
