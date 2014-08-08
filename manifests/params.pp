@@ -13,6 +13,7 @@ class plone::params {
 		         'http://dist.plone.org/release/4.3-latest',
                          'https://github.com/interlegis/collective.recipe.filestorage/tarball/master#egg=collective.recipe.filestorage-0.7il1' ]
   $allow_hosts        = [ '*.python.org',
+                          '*.plone.org',
                           'github.com' ]
   $buildout_user  = 'root'
   $buildout_group = 'root'
