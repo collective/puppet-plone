@@ -31,11 +31,13 @@ class plone::params {
   $instance_user        = 'admin'
   $instance_pw          = 'admin'
   $instance_eggs        = [ 'Plone', 'Pillow' ]
+  $enable_tempstorage   = false
 
   # Zeo server defaults
   $zeo_port = '8100'
   $default_zrs_role = 'disabled'
   $default_zrs_keep_alive = '60'
+  $zeo_eggs = [ 'Zope2', 'plone.app.blob', 'tempstorage' ]
 
   #Plone Buildout defaults
   $extends             = ['http://dist.plone.org/release/4.3.3/versions.cfg']

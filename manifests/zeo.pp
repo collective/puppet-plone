@@ -21,7 +21,7 @@ define plone::zeo ( $port           = $plone::params::zeo_port,
   validate_array($custom_extends)
   $extends = concat($plone::params::extends,$custom_extends)
   validate_array($custom_eggs)
-  $eggs = concat($plone::params::instance_eggs,$custom_eggs)
+  $eggs = concat($plone::params::zeo_eggs,$custom_eggs)
 
   plone::buildout { "zeo-${name}":
     user            => $buildout_user,
@@ -30,8 +30,8 @@ define plone::zeo ( $port           = $plone::params::zeo_port,
     buildout_params => { extends              => $extends,
                          buildout-user        => $buildout_user,
                          effective-user       => $plone_user,
-                         find-links           => $find_links,
                          eggs                 => $eggs,
+                         find-links           => $find_links,
                          allow-hosts          => $plone::params::allow_hosts,
                          var-dir              => '${buildout:directory}/var',
                          backups-dir          => '${buildout:var-dir}',
@@ -56,9 +56,14 @@ define plone::zeo ( $port           = $plone::params::zeo_port,
 
   #Create zeoserver section
   $zeo_common_config = {  zeo-address    => [ "$port" ],
+                          eggs           => $eggs,
                           effective-user => '${buildout:effective-user}',
                           var            => "$install_dir/zeo-$name/var",
                           zeo-log        => "$install_dir/zeo-$name/var/log/zeoserver.log",
+                          zeo-conf-additional => [ '%import tempstorage',
+                                                   '<temporarystorage temp>',
+                                                   '  name temporary storage for sessioning',
+                                                   '</temporarystorage>' ]
                        }
 
   case $zrs_role {
@@ -68,6 +73,7 @@ define plone::zeo ( $port           = $plone::params::zeo_port,
       $zeo_cfg_header = { recipe           => 'plone.recipe.zeoserver[zrs]',
                           replicate-to     => $zrs_repl_host,
                           keep-alive-delay => $zrs_keep_alive,
+                          eggs             => concat($eggs,['plone.recipe.zeoserver[zrs]']),
                         }
     }
     'secondary': {
@@ -75,10 +81,13 @@ define plone::zeo ( $port           = $plone::params::zeo_port,
       $zeo_cfg_header = { recipe           => 'plone.recipe.zeoserver[zrs]',
                           replicate-from   => $zrs_repl_host,
                           keep-alive-delay => $zrs_keep_alive,
+                          eggs             => concat($eggs,['plone.recipe.zeoserver[zrs]']),
                         }
     }
     'disabled': {
-      $zeo_cfg_header = { recipe => 'plone.recipe.zeoserver' }
+      $zeo_cfg_header = { recipe => 'plone.recipe.zeoserver', 
+                          eggs => concat($eggs,['plone.recipe.zeoserver']),
+                        }
     }
     default: {
       fail ("Unknown ZRS role $zrs_role. Valid ones are primary, secondary or disabled.")
@@ -87,7 +96,7 @@ define plone::zeo ( $port           = $plone::params::zeo_port,
 
   plone::buildoutpart { "zeoserver_$name":
         part_name    => "zeoserver",
-        cfghash      => merge($zeo_cfg_header,$zeo_common_config), 
+        cfghash      => merge($zeo_common_config,$zeo_cfg_header), 
         buildout_dir => "${install_dir}/zeo-$name",
   }
 

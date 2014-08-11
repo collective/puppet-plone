@@ -1,22 +1,24 @@
 # instance.pp
 # requires puppetlabs-stdlib
 
-define plone::instance ( $port           = $plone::params::instance_port,
-                         $user           = $plone::params::instance_user,
-                         $password       = $plone::params::instance_pw,
-                         $install_dir    = $plone::params::plone_install_dir,
-                         $buildout_user  = $plone::params::plone_buildout_user,
-                         $plone_user     = $plone::params::plone_user, 
-                         $plone_group    = $plone::params::plone_group,
-                         $find_links     = $plone::params::find_links,
-                         $plone_versions = $plone::params::plone_versions,
-                         $read_only      = $plone::params::inst_readonly_status,
-                         $zeo_client     = $plone::params::zeo_client_status,
-                         $zeo_address    = '', 
-                         $custom_eggs    = [],
-                         $custom_extends = [],
-                         $custom_params  = {},
-                         $sites          = {},
+define plone::instance ( $port               = $plone::params::instance_port,
+                         $user               = $plone::params::instance_user,
+                         $password           = $plone::params::instance_pw,
+                         $install_dir        = $plone::params::plone_install_dir,
+                         $buildout_user      = $plone::params::plone_buildout_user,
+                         $plone_user         = $plone::params::plone_user, 
+                         $plone_group        = $plone::params::plone_group,
+                         $find_links         = $plone::params::find_links,
+                         $plone_versions     = $plone::params::plone_versions,
+                         $read_only          = $plone::params::inst_readonly_status,
+                         $zeo_client         = $plone::params::zeo_client_status,
+                         $enable_tempstorage = $plone::params::enable_tempstorage,
+                         $zeo_address        = '', 
+                         $custom_eggs        = [],
+                         $custom_extends     = [],
+                         $custom_bout_params = {},
+                         $custom_params      = {},
+                         $sites              = {},
                        ) {
 
   include plone::params
@@ -43,7 +45,7 @@ define plone::instance ( $port           = $plone::params::instance_port,
     user            => $buildout_user,
     group           => $plone_group,
     buildout_dir    => "${install_dir}",
-    buildout_params => merge($bout_params, $custom_params),
+    buildout_params => merge($bout_params, $custom_bout_params),
     require         => [ User[$buildout_user],
                          File[$install_dir],
                        ],
@@ -61,7 +63,7 @@ define plone::instance ( $port           = $plone::params::instance_port,
   validate_array($custom_eggs)
   $eggs = concat($plone::params::instance_eggs,$custom_eggs)
 
-  $inst_common_config = { recipe               => 'plone.recipe.zope2instance',
+  $inst_common_conf_h = { recipe               => 'plone.recipe.zope2instance',
                           http-address         => "$port",
                           read-only            => "$read_only",
                           user                 => "$user:$password",
@@ -79,14 +81,34 @@ define plone::instance ( $port           = $plone::params::instance_port,
                           deprecation-warnings => '${buildout:deprecation-warnings}',
                         }
 
+  $inst_common_config = merge($inst_common_conf_h,$custom_params)
+
   if $zeo_client == true {
     validate_re($zeo_address,'\b(?:\d{1,3}\.){3}\d{1,3}\b:\d{1,5}\b',"Invalid ZEO server host. Must be an IP Socket.")
 
-    $inst_cfg_header = { zeo-client       => 'true',
-                         shared-blob      => 'on',
-                         http-fast-listen => 'off',
-                         zeo-address      => "$zeo_address",
+    $inst_cfg_header_h = { zeo-client       => 'true',
+                           shared-blob      => 'on',
+                           http-fast-listen => 'off',
+                           zeo-address      => "$zeo_address",
+                         }
+    $tempstorage_cfg = { zodb-temporary-storage =>
+                          [ '<zodb_db temporary>',
+                            '  mount-point /temp_folder',
+                            '  cache-size 10000',
+                            '  container-class Products.TemporaryFolder.TemporaryContainer',
+                            '  <zeoclient>',
+                            '    server ${instance:zeo-address}',
+                            '    storage temp',
+                            '    var ${buildout:directory}/var/filestorage',
+                            '    cache-size 1024MB',
+                            '  </zeoclient>',
+                            '</zodb_db>' ]
                        }
+    if $enable_tempstorage {
+      $inst_cfg_header = merge($inst_cfg_header_h,$tempstorage_cfg)
+    } else {
+      $inst_cfg_header = $inst_cfg_header_h
+    }
   } else {
     $inst_cfg_header = { }
   }
