@@ -13,6 +13,7 @@ define plone::instance ( $port               = $plone::params::instance_port,
                          $read_only          = $plone::params::inst_readonly_status,
                          $zeo_client         = $plone::params::zeo_client_status,
                          $enable_tempstorage = $plone::params::enable_tempstorage,
+                         $blobstorage_dir    = $plone::params::blobstorage_dir,
                          $zeo_address        = '', 
                          $custom_eggs        = [],
                          $custom_extends     = [],
@@ -79,6 +80,7 @@ define plone::instance ( $port               = $plone::params::instance_port,
                           debug-mode           => 'off',
                           verbose-security     => '${buildout:verbose-security}',
                           deprecation-warnings => '${buildout:deprecation-warnings}',
+                          blob-storage         => $blobstorage_dir,
                         }
 
   $inst_common_config = merge($inst_common_conf_h,$custom_params)

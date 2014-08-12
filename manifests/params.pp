@@ -32,12 +32,16 @@ class plone::params {
   $instance_pw          = 'admin'
   $instance_eggs        = [ 'Plone', 'Pillow' ]
   $enable_tempstorage   = false
+  $blobstorage_dir      = '${buildout:directory}/var/blobstorage'
 
   # Zeo server defaults
   $zeo_port = '8100'
   $default_zrs_role = 'disabled'
   $default_zrs_keep_alive = '60'
   $zeo_eggs = [ 'Zope2', 'plone.app.blob', 'tempstorage' ]
+
+  # Plone File Storage Defaults
+  $filestorage_blobdir = 'var/blobstorage-%(fs_part_name)s' 
 
   #Plone Buildout defaults
   $extends             = ['http://dist.plone.org/release/4.3.3/versions.cfg']
