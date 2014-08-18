@@ -4,7 +4,7 @@
 define plone::zeo ( $port            = $plone::params::zeo_port,
                     $install_dir     = $plone::params::plone_install_dir,
                     $buildout_user   = $plone::params::plone_buildout_user,
-                    $plone_user      = $plone::params::plone_user, 
+                    $plone_user      = $plone::params::plone_user,
                     $plone_group     = $plone::params::plone_group,
                     $find_links      = $plone::params::find_links,
                     $plone_versions  = $plone::params::plone_versions,
@@ -14,7 +14,7 @@ define plone::zeo ( $port            = $plone::params::zeo_port,
                     $zrs_repl_host   = '',
                     $custom_extends  = [],
                     $custom_eggs     = [],
-                   ) {
+                  ) {
 
   include plone::params
 
@@ -24,32 +24,32 @@ define plone::zeo ( $port            = $plone::params::zeo_port,
   validate_array($custom_eggs)
   $eggs = concat($plone::params::zeo_eggs,$custom_eggs)
 
-  plone::buildout { "zeo-${name}":
+  buildout::env { "zeo-${name}":
     user            => $buildout_user,
     group           => $plone_group,
-    buildout_dir    => "${install_dir}",
-    buildout_params => { extends              => $extends,
-                         buildout-user        => $buildout_user,
-                         effective-user       => $plone_user,
-                         eggs                 => $eggs,
-                         find-links           => $find_links,
-                         allow-hosts          => $plone::params::allow_hosts,
-                         var-dir              => '${buildout:directory}/var',
-                         backups-dir          => '${buildout:var-dir}',
-                         newest               => 'false',
-                         prefer-final         => 'true',
-                         extensions           => [ 'buildout.sanitycheck' ],
-                         environment-vars     => 'zope_i18n_compile_mo_files true',
-                         deprecation-warnings => 'off',
-			 verbose-security     => 'off',
-                       },
-    require         => [ User[$buildout_user],
-                         File[$install_dir],
-                       ],
+    dir             => "${install_dir}",
+    params          => {  extends              => $extends,
+                          buildout-user        => $buildout_user,
+                          effective-user       => $plone_user,
+                          eggs                 => $eggs,
+                          find-links           => $find_links,
+                          allow-hosts          => $plone::params::allow_hosts,
+                          var-dir              => '${buildout:directory}/var',
+                          backups-dir          => '${buildout:var-dir}',
+                          newest               => 'false',
+                          prefer-final         => 'true',
+                          extensions           => [ 'buildout.sanitycheck' ],
+                          environment-vars     => 'zope_i18n_compile_mo_files true',
+                          deprecation-warnings => 'off',
+                          verbose-security     => 'off',
+                        },
+    require         =>  [ User[$buildout_user],
+                          File[$install_dir],
+                        ],
   }
 
   #Create versions section
-  plone::buildoutsection { "versions_zeo-$name":
+  buildout::section { "versions_zeo-$name":
     section_name => "versions",
     cfghash      => $plone_versions,
     buildout_dir => "${install_dir}/zeo-$name",
@@ -62,11 +62,11 @@ define plone::zeo ( $port            = $plone::params::zeo_port,
                           var            => "$install_dir/zeo-$name/var",
                           blob-storage   => $blobstorage_dir,
                           zeo-log        => "$install_dir/zeo-$name/var/log/zeoserver.log",
-                          zeo-conf-additional => [ '%import tempstorage',
-                                                   '<temporarystorage temp>',
-                                                   '  name temporary storage for sessioning',
-                                                   '</temporarystorage>' ]
-                       }
+                          zeo-conf-additional => [  '%import tempstorage',
+                                                    '<temporarystorage temp>',
+                                                    '  name temporary storage for sessioning',
+                                                    '</temporarystorage>' ]
+                        }
 
   case $zrs_role {
     'primary': {
@@ -96,7 +96,7 @@ define plone::zeo ( $port            = $plone::params::zeo_port,
     }
   }  
 
-  plone::buildoutpart { "zeoserver_$name":
+  buildout::part { "zeoserver_$name":
         part_name    => "zeoserver",
         cfghash      => merge($zeo_common_config,$zeo_cfg_header), 
         buildout_dir => "${install_dir}/zeo-$name",
@@ -115,7 +115,7 @@ define plone::zeo ( $port            = $plone::params::zeo_port,
   # installs a zopepy python interpreter that runs with your
   # full Zope environment
 
-  plone::buildoutpart { "zopepy_zeo-$name":
+  buildout::part { "zopepy_zeo-$name":
     part_name    => "zopepy",
     cfghash      => { recipe => 'zc.recipe.egg',
                       eggs => '${buildout:eggs}',
@@ -129,7 +129,7 @@ define plone::zeo ( $port            = $plone::params::zeo_port,
   # .py and .po files so that the daemon doesn't try to do it.
   # For options see http://pypi.python.org/pypi/plone.recipe.precompiler
 
-  plone::buildoutpart { "precompiler_zeo-$name":
+  buildout::part { "precompiler_zeo-$name":
     part_name    => "precompiler",
     cfghash      => { recipe => 'plone.recipe.precompiler',
                       eggs => '${buildout:eggs}',
@@ -142,7 +142,7 @@ define plone::zeo ( $port            = $plone::params::zeo_port,
   # This recipe builds the backup, restore and snapshotbackup commands.
   # For options see http://pypi.python.org/pypi/collective.recipe.backup
 
-  plone::buildoutpart { "backup_zeo-$name":
+  buildout::part { "backup_zeo-$name":
     part_name    => "backup",
     cfghash      => { recipe => 'collective.recipe.backup',
                       location => '${buildout:backups-dir}/backups',

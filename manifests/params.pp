@@ -3,9 +3,6 @@
 class plone::params {
 
   #Buildout defaults 
-  $buildout_dir       = '/srv/buildout'
-  $buildout_cache_dir = 'buildout-cache'
-  $buildout_source    = 'http://downloads.buildout.org/2/bootstrap.py'
   $find_links         = ['http://dist.plone.org',
                          'http://download.zope.org/ppix/',
                          'http://download.zope.org/distribution/',
@@ -15,8 +12,6 @@ class plone::params {
   $allow_hosts        = [ '*.python.org',
                           '*.plone.org',
                           'github.com' ]
-  $buildout_user  = 'root'
-  $buildout_group = 'root'
 
   # Plone module defaults
   $default_install_type         = 'standalone'

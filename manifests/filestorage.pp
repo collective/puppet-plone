@@ -6,8 +6,8 @@ define plone::filestorage ( $fs_name         = $name,
                             $blobstorage_dir = $plone::params::filestorage_blobdir, 
                     ) {
 
-  if !defined(Plone::Buildoutpart["filestorage_${instance_name}"]) { 
-    plone::buildoutpart { "filestorage_${instance_name}":
+  if !defined(Buildout::Part["filestorage_${instance_name}"]) { 
+    buildout::part { "filestorage_${instance_name}":
       part_name    => "filestorage",
       cfghash      => { recipe => 'collective.recipe.filestorage',
                         location => 'var/filestorage/Data_%(fs_part_name)s.fs',

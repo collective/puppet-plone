@@ -1,5 +1,6 @@
 # instance.pp
-# requires puppetlabs-stdlib
+# requires puppetlabs/stdlib
+#          interlegis/buildout
 
 define plone::instance ( $port               = $plone::params::instance_port,
                          $user               = $plone::params::instance_user,
@@ -42,19 +43,19 @@ define plone::instance ( $port               = $plone::params::instance_port,
                    verbose-security     => 'off',
                  }
 
-  plone::buildout { $name:
-    user            => $buildout_user,
-    group           => $plone_group,
-    buildout_dir    => "${install_dir}",
-    buildout_params => merge($bout_params, $custom_bout_params),
-    require         => [ User[$buildout_user],
-                         File[$install_dir],
-                       ],
+  buildout::env { $name:
+    user    => $buildout_user,
+    group   => $plone_group,
+    dir     => "${install_dir}",
+    params  => merge($bout_params, $custom_bout_params),
+    require => [ User[$buildout_user],
+                 File[$install_dir],
+               ],
   }
 
   #Create versions section
 
-  plone::buildoutsection { "versions_$name":
+  buildout::section { "versions_$name":
     section_name => "versions",
     cfghash      => $plone_versions,
     buildout_dir => "${install_dir}/$name",
@@ -115,7 +116,7 @@ define plone::instance ( $port               = $plone::params::instance_port,
     $inst_cfg_header = { }
   }
 
-  plone::buildoutpart { "instance_$name":
+  buildout::part { "instance_$name":
     part_name    => "instance",
     cfghash      => merge($inst_cfg_header,$inst_common_config),
     buildout_dir => "${install_dir}/$name",
@@ -134,7 +135,7 @@ define plone::instance ( $port               = $plone::params::instance_port,
   # installs a zopepy python interpreter that runs with your
   # full Zope environment
 
-  plone::buildoutpart { "zopepy_$name":
+  buildout::part { "zopepy_$name":
     part_name    => "zopepy",
     cfghash      => { recipe => 'zc.recipe.egg',
                       eggs => '${instance:eggs}',
@@ -148,7 +149,7 @@ define plone::instance ( $port               = $plone::params::instance_port,
   # .py and .po files so that the daemon doesn't try to do it.
   # For options see http://pypi.python.org/pypi/plone.recipe.precompiler
 
-  plone::buildoutpart { "precompiler_$name":
+  buildout::part { "precompiler_$name":
     part_name    => "precompiler",
     cfghash      => { recipe => 'plone.recipe.precompiler',
                       eggs => '${instance:eggs}',
@@ -161,7 +162,7 @@ define plone::instance ( $port               = $plone::params::instance_port,
   # This recipe installs the plonectl script and a few other convenience items.
   # For options see http://pypi.python.org/pypi/plone.recipe.unifiedinstaller
 
-  plone::buildoutpart { "unifiedinstaller_$name":
+  buildout::part { "unifiedinstaller_$name":
     part_name    => "unifiedinstaller",
     cfghash      => { recipe => 'plone.recipe.unifiedinstaller',
                       user => '${instance:user}',

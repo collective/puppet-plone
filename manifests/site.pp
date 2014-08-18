@@ -16,7 +16,7 @@ define plone::site ( $id               = $plone::params::default_site_id,
                      $install_dir      = $plone::params::plone_install_dir,
                     ) {
 
-  plone::buildoutpart { "site_$name":
+  buildout::part { "site_$name":
     part_name    => "site_$name",
     cfghash      => { recipe           => 'collective.recipe.plonesite',
                       site-id          => $id,
