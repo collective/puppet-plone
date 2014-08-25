@@ -66,4 +66,7 @@ class plone::params {
   $default_site_use_vhm          = 'true'
   $default_site_language         = 'en'
   $default_site_has_filestorage  = false
+  $default_site_admin_user       = 'admin'
+  $default_site_enabled          = 'true'
+  $default_site_refresh_only     = 'true'
 }

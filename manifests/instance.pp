@@ -41,6 +41,8 @@ define plone::instance ( $port               = $plone::params::instance_port,
                    environment-vars     => 'zope_i18n_compile_mo_files true',
                    deprecation-warnings => 'off',
                    verbose-security     => 'off',
+                   eggs-directory       => "${install_dir}/buildout-cache/eggs",
+                   download-cache       => "${install_dir}/buildout-cache/downloads",
                  }
 
   buildout::env { $name:
