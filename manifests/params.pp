@@ -8,7 +8,7 @@ class plone::params {
                          'http://download.zope.org/distribution/',
                          'http://effbot.org/downloads',
 		         'http://dist.plone.org/release/4.3-latest',
-                         'https://github.com/interlegis/collective.recipe.filestorage/tarball/master#egg=collective.recipe.filestorage-0.7il1' ]
+                         'https://github.com/interlegis/collective.recipe.plonesite/tarball/master#egg=collective.recipe.plonesite-1.8.6' ]
   $allow_hosts        = [ '*.python.org',
                           '*.plone.org',
                           'github.com' ]
@@ -54,7 +54,7 @@ class plone::params {
                            'plone.recipe.unifiedinstaller' => '4.3.1',
                            'zopeskel.dexterity'            => '1.5.4.1',
                            'zopeskel.diazotheme'           => '1.1',
-                           'collective.recipe.filestorage' => '0.7il1',
+                           'collective.recipe.plonesite'   => '1.8.6',
                          }
 
   #Plone Site Defaults
@@ -65,7 +65,7 @@ class plone::params {
   $default_site_port             = '80'
   $default_site_use_vhm          = 'true'
   $default_site_language         = 'en'
-  $default_site_has_filestorage  = false
+  $default_site_add_mountpoint   = false
   $default_site_admin_user       = 'admin'
   $default_site_enabled          = 'true'
   $default_site_refresh_only     = 'true'

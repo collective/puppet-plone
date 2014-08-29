@@ -175,6 +175,17 @@ define plone::instance ( $port               = $plone::params::instance_port,
     buildout_dir => "${install_dir}/$name",
   }
 
+  # This recipe installs the collective.recipe.plonesite egg
+
+  buildout::part { "eggs_$name":
+    part_name    => "eggs",
+    cfghash      => { recipe => 'zc.recipe.egg:eggs',
+                      eggs   => 'collective.recipe.plonesite >= 1.8.6',
+                    },
+    buildout_dir => "${install_dir}/$name",
+  }
+
+
   # Init script
   case $operatingsystem {
     'Ubuntu': {
