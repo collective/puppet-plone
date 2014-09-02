@@ -3,17 +3,22 @@
 define plone::filestorage ( $fs_name         = $name, 
                             $instance_name,
                             $install_dir     = $plone::params::plone_install_dir,
-                            $blobstorage_dir = $plone::params::filestorage_blobdir, 
+                            $blobstorage_dir = $plone::params::filestorage_blobdir,
+                            $enable_backup   = $plone::params::filestorage_enable_backup,
                     ) {
 
-  if !defined(Buildout::Part["filestorage_${instance_name}"]) { 
+  if !defined(Buildout::Part["filestorage_${instance_name}"]) {
+    $fs_cfghash = { recipe => 'collective.recipe.filestorage',
+                    location => 'var/filestorage/Data_%(fs_part_name)s.fs',
+                    blob-storage => $blobstorage_dir,
+                    zodb-mountpoint => '/%(fs_part_name)s',
+                  }
+ 
     buildout::part { "filestorage_${instance_name}":
       part_name    => "filestorage",
-      cfghash      => { recipe => 'collective.recipe.filestorage',
-                        location => 'var/filestorage/Data_%(fs_part_name)s.fs',
-                        blob-storage => $blobstorage_dir,
-                        zodb-mountpoint => '/%(fs_part_name)s',
-                        #backup => 'backup',
+      cfghash      => $enable_backup ? {
+                        true  => merge ( $fs_cfghash, { backup => 'backup' } ),
+                        false => $fs_cfghash,
                       },
       buildout_dir => "${install_dir}/${$instance_name}",
       order        => '00',

@@ -37,7 +37,8 @@ class plone::params {
   $backups_dir            = '${buildout:var-dir}' 
 
   # Plone File Storage Defaults
-  $filestorage_blobdir = 'var/blobstorage-%(fs_part_name)s' 
+  $filestorage_blobdir       = 'var/blobstorage-%(fs_part_name)s' 
+  $filestorage_enable_backup = false
 
   #Plone Buildout defaults
   $extends             = ['http://dist.plone.org/release/4.3.3/versions.cfg']
