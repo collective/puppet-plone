@@ -9,6 +9,8 @@ version "0.4"
 console none
 respawn
 
+limit nofile 65535 65535
+
 start on (local-filesystems and net-device-up and runlevel [2345])
 stop on runlevel [!2345]
 
