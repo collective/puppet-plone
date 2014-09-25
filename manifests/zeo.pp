@@ -13,6 +13,7 @@ define plone::zeo ( $port            = $plone::params::zeo_port,
                     $zrs_role        = $plone::params::default_zrs_role,
                     $zrs_keep_alive  = $plone::params::default_zrs_keep_alive,
                     $zrs_repl_host   = '',
+                    $invalid_queue   = $plone::params::default_invalid_queue,
                     $custom_extends  = [],
                     $custom_eggs     = [],
                   ) {
@@ -59,16 +60,17 @@ define plone::zeo ( $port            = $plone::params::zeo_port,
   }
 
   #Create zeoserver section
-  $zeo_common_config = {  zeo-address    => [ "$port" ],
-                          eggs           => $eggs,
-                          effective-user => '${buildout:effective-user}',
-                          var            => "$install_dir/zeo-$name/var",
-                          blob-storage   => $blobstorage_dir,
-                          zeo-log        => "$install_dir/zeo-$name/var/log/zeoserver.log",
+  $zeo_common_config = {  zeo-address         => [ "$port" ],
+                          eggs                => $eggs,
+                          effective-user      => '${buildout:effective-user}',
+                          var                 => "$install_dir/zeo-$name/var",
+                          blob-storage        => $blobstorage_dir,
+                          zeo-log             => "$install_dir/zeo-$name/var/log/zeoserver.log",
                           zeo-conf-additional => [  '%import tempstorage',
                                                     '<temporarystorage temp>',
                                                     '  name temporary storage for sessioning',
-                                                    '</temporarystorage>' ]
+                                                    '</temporarystorage>' ],
+                          invalidation-queue-size  => $invalid_queue,
                         }
 
   case $zrs_role {

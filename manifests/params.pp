@@ -28,11 +28,13 @@ class plone::params {
   $instance_eggs        = [ 'Plone', 'Pillow' ]
   $enable_tempstorage   = false
   $blobstorage_dir      = '${buildout:directory}/var/blobstorage'
+  $zserver_threads      = 1
 
   # Zeo server defaults
   $zeo_port               = '8100'
   $default_zrs_role       = 'disabled'
   $default_zrs_keep_alive = '60'
+  $default_invalid_queue  = '100'
   $zeo_eggs               = [ 'Zope2', 'plone.app.blob', 'tempstorage' ]
   $backups_dir            = '${buildout:var-dir}' 
 
