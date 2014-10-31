@@ -45,8 +45,11 @@ class plone::params {
   #Plone Buildout defaults
   $extends             = ['http://dist.plone.org/release/4.3.3/versions.cfg']
   $plone_user          = 'plone_daemon'
+  $plone_uid           = '1006'
   $plone_group         = 'plone_group'
+  $plone_gid           = '1006'
   $plone_buildout_user = 'plone_buildout'
+  $plone_buildout_uid  = '1007'
   $plone_install_dir   = '/srv/plone'
   $plone_versions      = { 'zc.buildout'                   => '>= 2.2.1',
                            'setuptools'                    => '>= 2.2',

@@ -5,8 +5,11 @@ class plone ( $install_dir         = $plone::params::plone_install_dir,
               $sites               = {},
               $filestorages        = {},
               $plone_group         = $plone::params::plone_group,
+              $plone_gid           = $plone::params::plone_gid,
               $plone_user          = $plone::params::plone_user,
+              $plone_uid           = $plone::params::plone_uid,
               $buildout_user       = $plone::params::plone_buildout_user,
+              $buildout_uid        = $plone::params::plone_buildout_uid,
               $admin_user          = $plone::params::instance_user,
               $admin_password      = $plone::params::instance_pw,
               $find_links          = $plone::params::find_links,
@@ -21,6 +24,7 @@ class plone ( $install_dir         = $plone::params::plone_install_dir,
   # Create plone user and group
   group { $plone_group:
     ensure => present,
+    gid    => $plone_gid,
   }
 
   user { $plone_user:
@@ -28,6 +32,7 @@ class plone ( $install_dir         = $plone::params::plone_install_dir,
     groups => [$plone_group],
     home   => '/bin/false',
     shell  => '/usr/sbin/nologin',
+    uid    => $plone_uid,
   }
 
   user { $buildout_user:
@@ -35,6 +40,7 @@ class plone ( $install_dir         = $plone::params::plone_install_dir,
     groups => [$plone_group],
     home   => '/bin/false',
     shell  => '/bin/bash',
+    uid    => $buildout_uid,
   }
 
   # Create install directory
