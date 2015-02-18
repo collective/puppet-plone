@@ -65,6 +65,7 @@ class plone::params {
                            'zopeskel.diazotheme'           => '1.1',
                            'collective.recipe.filestorage' => '0.7il1',
                            'collective.recipe.plonesite'   => '1.8.6',
+                           'zc.zrs'                        => '2.4.4',
                          }
 
   #Plone Site Defaults
