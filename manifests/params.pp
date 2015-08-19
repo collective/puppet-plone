@@ -45,7 +45,7 @@ class plone::params {
   $filestorage_enable_backup = false
 
   #Plone Buildout defaults
-  $extends             = ['http://dist.plone.org/release/4.3.3/versions.cfg']
+  $extends             = ['http://dist.plone.org/release/4.3.6/versions.cfg']
   $plone_user          = 'plone_daemon'
   $plone_uid           = '1006'
   $plone_group         = 'plone_group'
