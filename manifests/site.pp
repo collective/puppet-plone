@@ -83,6 +83,7 @@ define plone::site ( $site_name        = $name,
     user        => $plone_user,
     logoutput   => true,
     timeout     => 600,
+    require     => Plone::Instance["${instance_name}"],
   }
 
 }

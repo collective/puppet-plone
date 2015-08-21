@@ -22,6 +22,7 @@ define plone::instance ( $port               = $plone::params::instance_port,
                          $custom_bout_params = {},
                          $custom_params      = {},
                          $sites              = {},
+                         $bout_cache_file    = undef,
                        ) {
 
   include plone::params
@@ -47,10 +48,11 @@ define plone::instance ( $port               = $plone::params::instance_port,
                  }
 
   buildout::env { $name:
-    user    => $buildout_user,
-    group   => $plone_group,
-    dir     => "${install_dir}",
-    params  => merge($bout_params, $custom_bout_params),
+    user      => $buildout_user,
+    group     => $plone_group,
+    dir       => "${install_dir}",
+    params    => merge($bout_params, $custom_bout_params),
+    cachefile => $bout_cache_file,
     require => [ User[$buildout_user],
                  File[$install_dir],
                ],
