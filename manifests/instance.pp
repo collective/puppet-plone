@@ -184,7 +184,7 @@ define plone::instance ( $port               = $plone::params::instance_port,
   buildout::part { "eggs_$name":
     part_name    => "eggs",
     cfghash      => { recipe => 'zc.recipe.egg:eggs',
-                      eggs   => 'collective.recipe.plonesite >= 1.8.6',
+                      eggs   => 'collective.recipe.plonesite >= 1.9.0',
                     },
     buildout_dir => "${install_dir}/$name",
   }
