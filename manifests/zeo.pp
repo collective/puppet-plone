@@ -14,6 +14,7 @@ define plone::zeo ( $port            = $plone::params::zeo_port,
                     $zrs_keep_alive  = $plone::params::default_zrs_keep_alive,
                     $zrs_repl_host   = '',
                     $invalid_queue   = $plone::params::default_invalid_queue,
+                    $pack_days       = $plone::params::pack_days,
                     $custom_extends  = [],
                     $custom_eggs     = [],
                   ) {
@@ -71,6 +72,7 @@ define plone::zeo ( $port            = $plone::params::zeo_port,
                                                     '  name temporary storage for sessioning',
                                                     '</temporarystorage>' ],
                           invalidation-queue-size  => $invalid_queue,
+                          pack-days                => $pack_days,
                         }
 
   case $zrs_role {
