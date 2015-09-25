@@ -17,6 +17,7 @@ define plone::zeo ( $port            = $plone::params::zeo_port,
                     $pack_days       = $plone::params::pack_days,
                     $custom_extends  = [],
                     $custom_eggs     = [],
+                    $bout_cache_file = undef,
                   ) {
 
   include plone::params
@@ -31,6 +32,7 @@ define plone::zeo ( $port            = $plone::params::zeo_port,
     user            => $buildout_user,
     group           => $plone_group,
     dir             => "${install_dir}",
+    cachefile       => $bout_cache_file,
     params          => {  extends              => $extends,
                           buildout-user        => $buildout_user,
                           effective-user       => $plone_user,
