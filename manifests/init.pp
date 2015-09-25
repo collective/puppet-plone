@@ -17,6 +17,7 @@ class plone ( $install_dir         = $plone::params::plone_install_dir,
               $custom_eggs         = [],
               $type                = $plone::params::default_install_type, 
               $create_default_inst = $plone::params::create_default_inst,
+              $bout_cache_file     = undef,
 	    ) inherits plone::params {
 
   include plone::zope
@@ -56,15 +57,16 @@ class plone ( $install_dir         = $plone::params::plone_install_dir,
       notify { "Plone $type install.": }
 
       $instance_defaults = {
-        user           => $admin_user,
-        password       => $admin_password,
-        install_dir    => $install_dir,
-        buildout_user  => $buildout_user,
-        plone_user     => $plone_user,
-        plone_group    => $plone_group,
-        find_links     => $find_links,
-        custom_eggs    => $custom_eggs,
-        custom_extends => $custom_extends
+        user            => $admin_user,
+        password        => $admin_password,
+        install_dir     => $install_dir,
+        buildout_user   => $buildout_user,
+        plone_user      => $plone_user,
+        plone_group     => $plone_group,
+        find_links      => $find_links,
+        custom_eggs     => $custom_eggs,
+        custom_extends  => $custom_extends,
+        bout_cache_file => $bout_cache_file
       }
       if ( $instances == {} and $create_default_inst == true ) {
         create_resources( plone::instance, 
@@ -79,11 +81,12 @@ class plone ( $install_dir         = $plone::params::plone_install_dir,
       notify { "Plone zeo server install.": }
 
       $zeo_defaults = {
-        install_dir    => $install_dir,
-        buildout_user  => $buildout_user,
-        plone_user     => $plone_user,
-        plone_group    => $plone_group,
-        find_links     => $find_links,
+        install_dir     => $install_dir,
+        buildout_user   => $buildout_user,
+        plone_user      => $plone_user,
+        plone_group     => $plone_group,
+        find_links      => $find_links,
+        bout_cache_file => $bout_cache_file,
       }
       if ( $instances == {} and $create_default_inst == true) {
         create_resources( plone::zeo,
