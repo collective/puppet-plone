@@ -5,6 +5,8 @@ define plone::filestorage ( $fs_name         = $name,
                             $install_dir     = $plone::params::plone_install_dir,
                             $blobstorage_dir = $plone::params::filestorage_blobdir,
                             $enable_backup   = $plone::params::filestorage_enable_backup,
+                            $replicate_from  = undef,
+                            $replicate_to    = undef,
                     ) {
 
   if !defined(Buildout::Part["filestorage_${instance_name}"]) {
@@ -35,5 +37,16 @@ define plone::filestorage ( $fs_name         = $name,
     content => "   ${fs_name}\n",
     order   => "9902",
   }
+
+  if $replicate_from {
+    notify { "replicate_from": }
+    #buildout::part { "filestorage_${name}":
+    #  part_name    => "filestorage",
+    #  cfghash      => { replicate-from => "${zeoserver:replicate-from}0" },
+    #  buildout_dir => "${install_dir}/${$instance_name}",
+    #  order        => '02',
+    #}
+  }
+
 
 }
