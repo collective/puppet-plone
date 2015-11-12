@@ -38,6 +38,8 @@ class plone::params {
   $default_invalid_queue  = '100'
   $zeo_eggs               = [ 'Zope2', 'plone.app.blob', 'tempstorage' ]
   $backups_dir            = '${buildout:var-dir}' 
+  $backups_keep           = '2'
+  $backups_keep_blob_days = '14' 
   $pack_days              = '1' 
 
   # Plone File Storage Defaults
