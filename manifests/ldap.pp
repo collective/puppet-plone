@@ -1,3 +1,5 @@
+# ldap.pp
+
 class plone::ldap{
       $ldapsys = [
            'ldap-utils',
